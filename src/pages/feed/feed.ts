@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { MoovieProvider } from '../../providers/moovie/moovie';
 
 /**
  * Generated class for the FeedPage page.
@@ -12,19 +13,44 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 @Component({
   selector: 'page-feed',
   templateUrl: 'feed.html',
+  providers: [
+    MoovieProvider
+  ]
 })
+
 export class FeedPage {
-  public nome_usuario:string = "Neberson Andrade do Codigo";
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+
+  public objeto_feed = {
+    titulo: "Neberson Andrade",
+    data: "November 5, 1995",
+    descricao: "Estou criando um app incrivel...",
+    qtd_likes: 12,
+    qtd_comments: 4,
+    time_comment: "11h ago"
+  };
+
+  public lista_filmes = new Array<any>();
+
+  public nome_usuario: string = "Neberson Andrade do Codigo";
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private movieProvider: MoovieProvider) {
   }
-  
-  public somaDoisNumeros(num1:number, num2:number):void{
-      alert(num1+num2);
+
+  public somaDoisNumeros(num1: number, num2: number): void {
+    alert(num1 + num2);
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad FeedPage');
-    //this.somaDoisNumeros(10,30);
+    this.movieProvider.getLatestMovies().subscribe(data => {
+      const response = (data as any);
+      const objeto_retorno = JSON.parse(response._body);
+      this.lista_filmes = objeto_retorno.results;
+      console.log(objeto_retorno);
+    }, error => {
+      console.log(error);
+    }
+
+    )
   }
 
 }
