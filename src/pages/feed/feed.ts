@@ -23,7 +23,7 @@ export class FeedPage {
 
   public loader;
   public refresher;
-  public isRefreshing: boolean = false; 
+  public isRefreshing: boolean = false;
 
   public objeto_feed = {
     titulo: "Neberson Andrade",
@@ -35,6 +35,8 @@ export class FeedPage {
   };
 
   public lista_filmes = new Array<any>();
+  public page = 1;
+  public InfiniteScroll;
 
   public nome_usuario: string = "Neberson Andrade do Codigo";
 
@@ -43,12 +45,12 @@ export class FeedPage {
 
   abreCarregando() {
     this.loader = this.loadingCtrl.create({
-      content: "Aguarde por favor..."
+      content: "Carregando Filmes..."
     });
     this.loader.present();
   }
 
-  fechaCarregando(){
+  fechaCarregando() {
     this.loader.dismiss();
   }
 
@@ -64,22 +66,33 @@ export class FeedPage {
   }
 
   ionViewDidEnter() {
-   this.carregarFilmes();
+    this.carregarFilmes();
   }
 
-  abrirDetalhes(filme){
-    this.navCtrl.push(FilmeDetalhesPage,{ id: filme.id });
+  abrirDetalhes(filme) {
+    this.navCtrl.push(FilmeDetalhesPage, { id: filme.id });
   }
 
-  carregarFilmes(){
+  doInfinite(infiniteScroll) {
+    this.page++;
+    this.InfiniteScroll = infiniteScroll;
+    this.carregarFilmes(true);
+  }
+
+  carregarFilmes(newpage: boolean = false) {
     this.abreCarregando();
-    this.movieProvider.getLatestMovies().subscribe(data => {
+    this.movieProvider.getLatestMovies(this.page).subscribe(data => {
       const response = (data as any);
       const objeto_retorno = JSON.parse(response._body);
-      this.lista_filmes = objeto_retorno.results;
-      console.log(objeto_retorno);
+      if (newpage) {
+        this.lista_filmes = this.lista_filmes.concat(objeto_retorno.results);
+        this.InfiniteScroll.complete();
+      } else {
+        this.lista_filmes = objeto_retorno.results;
+      }
+
       this.fechaCarregando();
-      if(this.isRefreshing){
+      if (this.isRefreshing) {
         this.refresher.complete();
         this.isRefreshing = false;
       }

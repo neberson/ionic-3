@@ -11,19 +11,18 @@ export class MoovieProvider {
   baseApiPath = "https://api.themoviedb.org/3";
 
   constructor(public http: Http) {
-    console.log('Hello MoovieProvider Provider');
+  
   }
 
   getApiKey():string {
     return "38c2a9201ad1adc9fd0bc9c2dd3f91de";
   }
 
-  getLatestMovies() {
-    return this.http.get(this.baseApiPath + "/movie/popular?api_key=" + this.getApiKey());
+  getLatestMovies(page=1) {
+    return this.http.get(this.baseApiPath + "/movie/popular?page="+page+"&api_key=" + this.getApiKey());
   }
 
-  getMovieDetail(filmeid) {
-    console.log(this.baseApiPath + "/movie/"+filmeid+"?api_key=" + this.getApiKey());
+  getMovieDetails(filmeid:number) {
     return this.http.get(this.baseApiPath + "/movie/"+filmeid+"?api_key=" + this.getApiKey());
   }
 
